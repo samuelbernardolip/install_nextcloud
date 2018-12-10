@@ -24,10 +24,8 @@ addons:
       - ansible
 
 before_install:
-  - sudo export DEBIAN_FRONTEND=noninteractive
-  - sudo export DEBIAN_PRIORITY=critical
-  - sudo -E apt-get -qy update
-  - sudo -E apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade
+  - sudo apt-get -qy update
+  - sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade
   - echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"' | sudo tee /etc/default/docker > /dev/null
   - sudo service docker restart
   - sleep 5
