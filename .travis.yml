@@ -24,8 +24,8 @@ addons:
       - ansible
 
 before_install:
-  - sudo apt-get -qy update
-  - sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade
+  #- sudo apt-get -qy update
+  #- sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade
   - echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"' | sudo tee /etc/default/docker > /dev/null
   - sudo service docker restart
   - sleep 5
@@ -48,7 +48,7 @@ script:
   #- curl -i -s --insecure --data "user=ncadmin&password=" https://localhost/index.php/login | egrep -q "Location:.*/apps/files/"
 
  # Run tests in Container
- - sudo docker run -i --rm=yes -v "${TRAVIS_BUILD_DIR}:/mnt/" williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild bash -c "/mnt/tests/docker-run.sh" > /tmp/result-${OS_TYPE}${OS_VERSION}.log
+ - sudo docker run -i --rm -v "${TRAVIS_BUILD_DIR}:/mnt/" williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild bash -c "/mnt/tests/docker-run.sh" > /tmp/result-${OS_TYPE}${OS_VERSION}.log
  - echo "==> Validating the test results..."
  - sh -c "[ -s /tmp/result-${OS_TYPE}${OS_VERSION}.log ]"
 
