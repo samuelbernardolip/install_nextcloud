@@ -4,8 +4,7 @@ python: "2.7"
 os: linux
 dist: xenial
 env:
-  - OS_TYPE=centos
-  - OS_VERSION=7
+  - OS_TYPE=centos OS_VERSION=7
 
 branches:
   only:
@@ -25,12 +24,14 @@ addons:
       - ansible
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get upgrade lxc-docker
+  - sudo export DEBIAN_FRONTEND=noninteractive
+  - sudo export DEBIAN_PRIORITY=critical
+  - sudo -E apt-get -qy update
+  - sudo -E apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade
   - echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"' | sudo tee /etc/default/docker > /dev/null
   - sudo service docker restart
   - sleep 5
-  # Install docker
+  # Get docker
   - sudo docker pull williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild
 
 install:
