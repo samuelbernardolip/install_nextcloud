@@ -50,7 +50,7 @@ script:
  # Run tests in Container
  - sudo docker run -i --rm -v "${TRAVIS_BUILD_DIR}:/mnt/" williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild bash -c "/mnt/tests/docker-run.sh /mnt/tests" > /tmp/result-${OS_TYPE}${OS_VERSION}.log
  - echo "==> Validating the test results..."
- - sh -c "[ -s /tmp/result-${OS_TYPE}${OS_VERSION}.log ]"
+ - sh -c "[ -s /tmp/result-${OS_TYPE}${OS_VERSION}.log ] cat /tmp/result-${OS_TYPE}${OS_VERSION}.log"
 
 #notifications:
 #  webhooks: https://galaxy.ansible.com/api/v1/notifications/
