@@ -49,9 +49,9 @@ script:
   #- curl -i -s --insecure --data "user=ncadmin&password=" https://localhost/index.php/login | egrep -q "Location:.*/apps/files/"
 
  # Run tests in Container
- - sudo docker run -i --rm=yes -v "${TRAVIS_BUILD_DIR}:" williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild bash -c "./tests/docker-run.sh" > result-${OS_TYPE}${OS_VERSION}.log
+ - sudo docker run -i --rm=yes -v "${TRAVIS_BUILD_DIR}:/mnt/" williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild bash -c "/mnt/tests/docker-run.sh" > /tmp/result-${OS_TYPE}${OS_VERSION}.log
  - echo "==> Validating the test results..."
- - sh -c "[ -s result-${OS_TYPE}${OS_VERSION}.log ]"
+ - sh -c "[ -s /tmp/result-${OS_TYPE}${OS_VERSION}.log ]"
 
-notifications:
-  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+#notifications:
+#  webhooks: https://galaxy.ansible.com/api/v1/notifications/
