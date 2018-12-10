@@ -2,22 +2,36 @@
 language: python
 python: "2.7"
 os: linux
-dist: trusty
+dist: xenial
 env:
-  - ansible_version="2.4.0.0"
-  - ansible_version="2.4.1.0"
-  - ansible_version="2.4.2.0"
+  - OS_TYPE=centos
+  - OS_VERSION=7
+
+branches:
+  only:
+  - master
+#  - stable
 
 sudo: required
 
-# Install ansible
+services:
+  - docker
+
+addons:
+  apt:
+    sources:
+      - ppa:ansible/ansible
+    packages:
+      - ansible
 
 before_install:
-  - sudo apt-get install python-setuptools
-  - sudo easy_install pip
-  # Install ansible
-  - sudo pip install -I "ansible==$ansible_version"
-  
+  - sudo apt-get update
+  - sudo apt-get upgrade lxc-docker
+  - echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"' | sudo tee /etc/default/docker > /dev/null
+  - sudo service docker restart
+  - sleep 5
+  # Install docker
+  - sudo docker pull williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild
 
 install:
   # Check ansible version
@@ -27,12 +41,17 @@ install:
 
 script:
   # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  #- ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
   # Test Demo case 1
-  - ansible-playbook tests/test.yml -i tests/inventory
+  #- ansible-playbook tests/test.yml -i tests/inventory
   # test login pages
-  - curl -i -s --insecure --data "user=ncadmin&password=" https://localhost/index.php/login | egrep -q "Location:.*/apps/files/"
+  #- curl -i -s --insecure --data "user=ncadmin&password=" https://localhost/index.php/login | egrep -q "Location:.*/apps/files/"
+
+ # Run tests in Container
+ - sudo docker run -i --rm=yes -v "${TRAVIS_BUILD_DIR}:" williamyeh/ansible:${OS_TYPE}${OS_VERSION}-onbuild bash -c "./tests/docker-run.sh" > result-${OS_TYPE}${OS_VERSION}.log
+ - echo "==> Validating the test results..."
+ - sh -c "[ -s result-${OS_TYPE}${OS_VERSION}.log ]"
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
